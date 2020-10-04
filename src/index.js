@@ -1,6 +1,7 @@
 import React from "react";
 import reactDOM from "react-dom";
-
+import SeasonDisplay from "./SeasonDisplay";
+import Spinner from "./Spinner";
 // const App = () => {
 //   window.navigator.geolocation.getCurrentPosition(
 //     (position) => console.log(position),
@@ -15,19 +16,34 @@ class App extends React.Component {
     // super(props);
     this.state = { lat: null, errorMessage: "" }; // you can initize the state
 
+    // window.navigator.geolocation
+    //   .getCurrentPosition
+    // (position) => console.log(position),
+    // (err) => console.log(err)
+    // (position) => {
+    //   // important we call the below
+    //   this.setState({ lat: position.coords.latitude });
+    // },
+    // (err) => {
+    //   this.setState({ errorMessage: err.errorMessage });
+    // }
+    // ();
+  }
+  // the below single line of code like constructor, super(), this.state line is same as the below one
+  state = { lat: null, errorMessage: "" };
+  componentDidMount() {
+    // this called the very first time when the function invokes
+    //console.log("My component was rendered to the screen");
+    // just reduce the line of code
     window.navigator.geolocation.getCurrentPosition(
-      // (position) => console.log(position),
-      // (err) => console.log(err)
-      (position) => {
-        // important we call the below
-        this.setState({ lat: position.coords.latitude });
-      },
-      (err) => {
-        this.setState({ errorMessage: err.errorMessage });
-      }
+      (position) => this.setState({ lat: position.coords.latitude }),
+      (err) => this.setState({ errorMessage: err.errorMessage })
     );
   }
-
+  componentDidUpdate() {
+    // this updates when something is changed
+    //console.log("My component was just updated - it rerendered");
+  }
   render() {
     // the below three which we comment beacuse render method call again and again and we dont know how
     // so we copy and paste that code in the constructor.
@@ -46,13 +62,15 @@ class App extends React.Component {
       return <div>Error: {this.state.errorMessage}</div>;
     }
     if (!this.state.errorMessage && this.state.lat) {
-      return <div>Error: {this.state.lat}</div>;
+      // return <div>Error: {this.state.lat}</div>;
+      return <SeasonDisplay lat={this.state.lat} />;
     }
-    return <div>Loading!</div>;
+    return <Spinner message="Please accept location request" />;
     // );
   }
 }
-
+// for above it is better to have single return statement and for that we make a new function and then we can wrap them up.
+// return ( <div class = border>{functioncalling()}</div>);
 reactDOM.render(<App />, document.querySelector("#root"));
 
 // Properties of the class component
@@ -85,4 +103,20 @@ reactDOM.render(<App />, document.querySelector("#root"));
 
 // Handling Erros gracefully -> Below explained
 
-// Understanding Lifecycle Methods Section 6
+// Understanding Lifecycle Methods Section 6 (Component life cycle)
+// 1- Constructor is called
+// Good place to do one-time setup
+// 2- render method is called
+// Avoid doing anything besides returining JSX
+// Content visible on screen
+// 3- componentDidMount method is called
+// Good place to do data loading
+// Sit and wait for update
+// 4- before that render is called which return JSXcomponentDidUpdate() is called
+// good place to do more-data loading when state/props change
+// Sit and wait untill this  component is not longer shown
+// 5- componentWillUnmount
+// Good place to do cleanup(especially for non-React stuff)
+// Below the very frequency methods we used
+// shouldComponentUpdate(), getDerivedStateFrom(), getSnapshotBeforeUpdate()
+// Lecture: Passing States as Props
